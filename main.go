@@ -15,9 +15,8 @@ var cafeList = map[string][]string{
 func mainHandle(w http.ResponseWriter, req *http.Request) {
 	var err error
 
-	// если count не указан, то возвращается 25 записей
 	count := 25
-	countStr := req.FormValue("count") // количество
+	countStr := req.FormValue("count")
 	if countStr != "" {
 		count, err = strconv.Atoi(countStr)
 		if err != nil {
@@ -26,14 +25,14 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	city := req.FormValue("city") // город
+	city := req.FormValue("city")
 	cafe, ok := cafeList[city]
 	if !ok {
 		http.Error(w, "unknown city", http.StatusBadRequest)
 		return
 	}
 
-	if search := req.FormValue("search"); search != "" { // пойск
+	if search := req.FormValue("search"); search != "" {
 		var found []string
 
 		for _, v := range cafe {
