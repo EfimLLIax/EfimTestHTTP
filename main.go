@@ -8,8 +8,8 @@ import (
 )
 
 var cafeList = map[string][]string{
-	"moscow": []string{"Мир кофе", "Сладкоежка", "Кофе и завтраки", "Сытый студент", "Ложка и вилка"},
-	"tula":   []string{"Пир и мир", "Красиво есть не запретишь", "Поздний завтрак"},
+	"moscow": {"Мир кофе", "Сладкоежка", "Кофе и завтраки", "Сытый студент", "Ложка и вилка"},
+	"tula":   {"Пир и мир", "Красиво есть не запретишь", "Поздний завтрак"},
 }
 
 func mainHandle(w http.ResponseWriter, req *http.Request) {
@@ -17,7 +17,7 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 
 	// если count не указан, то возвращается 25 записей
 	count := 25
-	countStr := req.FormValue("count")
+	countStr := req.FormValue("count") // количество
 	if countStr != "" {
 		count, err = strconv.Atoi(countStr)
 		if err != nil {
@@ -25,13 +25,15 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	city := req.FormValue("city")
+
+	city := req.FormValue("city") // город
 	cafe, ok := cafeList[city]
 	if !ok {
 		http.Error(w, "unknown city", http.StatusBadRequest)
 		return
 	}
-	if search := req.FormValue("search"); search != "" {
+
+	if search := req.FormValue("search"); search != "" { // пойск
 		var found []string
 
 		for _, v := range cafe {
@@ -41,6 +43,7 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 		}
 		cafe = found
 	}
+
 	count = min(count, len(cafe))
 	answer := strings.Join(cafe[:count], ",")
 	io.WriteString(w, answer)
