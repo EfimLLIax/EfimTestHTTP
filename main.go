@@ -8,14 +8,13 @@ import (
 )
 
 var cafeList = map[string][]string{
-	"moscow": []string{"Мир кофе", "Сладкоежка", "Кофе и завтраки", "Сытый студент", "Ложка и вилка"},
-	"tula":   []string{"Пир и мир", "Красиво есть не запретишь", "Поздний завтрак"},
+	"moscow": {"Мир кофе", "Сладкоежка", "Кофе и завтраки", "Сытый студент", "Ложка и вилка"},
+	"tula":   {"Пир и мир", "Красиво есть не запретишь", "Поздний завтрак"},
 }
 
 func mainHandle(w http.ResponseWriter, req *http.Request) {
 	var err error
 
-	// если count не указан, то возвращается 25 записей
 	count := 25
 	countStr := req.FormValue("count")
 	if countStr != "" {
@@ -25,12 +24,14 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
+
 	city := req.FormValue("city")
 	cafe, ok := cafeList[city]
 	if !ok {
 		http.Error(w, "unknown city", http.StatusBadRequest)
 		return
 	}
+
 	if search := req.FormValue("search"); search != "" {
 		var found []string
 
@@ -41,6 +42,7 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 		}
 		cafe = found
 	}
+
 	count = min(count, len(cafe))
 	answer := strings.Join(cafe[:count], ",")
 	io.WriteString(w, answer)
